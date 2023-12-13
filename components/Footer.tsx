@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 
 const Footer = () => {
@@ -9,7 +10,13 @@ const Footer = () => {
                         <p className="text-sm font-normal text-zinc-400">@ Gptnomics 2024</p>
                     </div>
                     <div>
-                        <p className="text-sm font-normal text-zinc-500">Made by Kris 👽</p>
+                        <Link
+                            href={'https://twitter.com/ItsKrisKriz'}
+                            target="_blank"
+                            className="text-sm font-normal text-zinc-500"
+                        >
+                            Made by Kris 👽
+                        </Link>
                     </div>
                 </div>
             </div>

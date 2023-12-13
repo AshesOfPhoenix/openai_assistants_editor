@@ -15,7 +15,21 @@ interface Metadata {
 
 interface Assistant {
     [key: string]: any;
-    active: boolean;
+    created_at: number;
+    description: string | null;
+    file_ids: string[];
+    id: string;
+    instructions: string;
+    metadata: Metadata;
+    model: string;
+    name: string;
+    object: string;
+    tools: Tool[];
+    label: string;
+}
+
+interface AssistantCustom {
+    [key: string]: any;
     pendingChanges: boolean;
     created_at: number;
     description: string | null;
@@ -38,5 +52,5 @@ interface Model {
 }
 
 interface RootObject {
-    [index: number]: Assistant;
+    [index: number]: AssistantCustom;
 }

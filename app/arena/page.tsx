@@ -1,6 +1,6 @@
 import React from 'react';
 import AssistantsContainer from '@/components/assistants/AssistantsContainer';
-import ChatContainer from '@/components/ChatContainer';
+import ChatContainer from '@/components/chat/ChatContainer';
 import { LightningBoltIcon } from '@radix-ui/react-icons';
 
 export default function Home() {
@@ -16,9 +16,6 @@ export default function Home() {
                             height={20}
                         />
                     </p>
-                    {/* <div className="fixed bottom-0 right-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none mb-10 lg:mb-0">
-                        <CreateEmbeddingsButton />
-                    </div> */}
                     <p className="fixed left-0 top-0 flex w-full justify-center lg:hover:outline lg:hover:outline-[0.1px] lg:hover:outline-zinc-200 hover:shadow-md items-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto lg:rounded-lg lg:border lg:bg-gray-200 py-4 lg:px-4 lg:py-2 lg:dark:bg-zinc-800/30">
                         Enter your API key to plug in
                     </p>

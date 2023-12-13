@@ -147,8 +147,9 @@ const ChatContainer = () => {
             >
                 <span>
                     {item.assistant_id && item.role === 'assistant'
-                        ? assistants?.find((assist: Assistant) => assist.id === item.assistant_id)
-                              ?.name ?? 'Unknown'
+                        ? assistants?.find(
+                              (assist: AssistantCustom) => assist.id === item.assistant_id
+                          )?.name ?? 'Unknown'
                         : item.role === 'user'
                         ? 'User'
                         : 'Unknown'}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Button } from '@/components/ui/button';
 
@@ -27,12 +27,11 @@ const AssisstantBox = ({
     assistant,
     setActive,
 }: {
-    assistant: Assistant;
-    setActive: (assistant: Assistant) => void;
+    assistant: AssistantCustom;
+    setActive: (assistant: AssistantCustom, id?: string) => void;
 }) => {
     const { modelsList, assistants, setAssistants } = useAssistants();
-    let { name, description, active, tools, id, file_ids, instructions, model, pendingChanges } =
-        assistant;
+    let { name, description, tools, id, file_ids, instructions, model, pendingChanges } = assistant;
     const [open, setOpen] = React.useState(false);
     const [assistantModelId, setAssistantModelId] = React.useState<string>();
 
@@ -43,6 +42,27 @@ const AssisstantBox = ({
     }, [model, modelsList]);
 
     // const toolTypeString = (ToolType as ToolTypeIndex)[tools[0].type];
+
+    React.useEffect(() => {
+        // Compare active assistant with the assistant with the same id in assistants
+        // If they are different, set pendingChanges to true
+        const matchingAssistant = assistants?.find((a: AssistantCustom) => a.id === id);
+        if (matchingAssistant) {
+            if (
+                matchingAssistant.instructions !== instructions ||
+                matchingAssistant.model !== model ||
+                matchingAssistant.file_ids !== file_ids ||
+                matchingAssistant.tools !== tools ||
+                matchingAssistant.name !== name ||
+                matchingAssistant.description !== description
+            ) {
+                setActive({ ...assistant, pendingChanges: true });
+            } else {
+                setActive({ ...assistant, pendingChanges: false });
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [instructions, model, file_ids, tools, name, description]);
 
     return (
         <div className="flex flex-1 flex-col justify-start items-center w-full p-1 border rounded-md mt-2 gap-2 overflow-auto">
@@ -58,16 +78,13 @@ const AssisstantBox = ({
                 </div>
                 <CollapsibleContent>
                     <Textarea
-                        className="flex w-full min-h-[200px] max-h-[400px] text-sm font-mono text-gray-600 break-words overflow-auto hyphens-auto"
+                        className="flex w-full min-h-[200px] max-h-[330px] text-sm font-mono text-gray-600 break-words overflow-auto hyphens-auto"
                         id="instructions"
                         value={!instructions ? '' : instructions}
-                        onChange={(e) => {
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
                             const value = e.target.value;
                             const updatedAssistant = { ...assistant, instructions: value };
-                            const updatedAssistants = assistants?.map((a: Assistant) =>
-                                a.id === assistant.id ? updatedAssistant : a
-                            );
-                            setAssistants(updatedAssistants as [Assistant]);
+                            setActive(updatedAssistant);
                         }}
                     ></Textarea>
                 </CollapsibleContent>
@@ -98,8 +115,13 @@ const AssisstantBox = ({
                                     <CommandItem
                                         key={model.id}
                                         value={model.id}
-                                        onSelect={(currentValue) => {
+                                        onSelect={(currentValue: string) => {
                                             setAssistantModelId(currentValue);
+                                            const updatedAssistant = {
+                                                ...assistant,
+                                                model: currentValue,
+                                            };
+                                            setActive(updatedAssistant);
                                             setOpen(false);
                                             console.log('currentValue => ', currentValue);
                                         }}
@@ -152,7 +174,7 @@ const AssisstantBox = ({
                             variant={'secondary'}
                             className="w-full"
                             onClick={() => {
-                                // implement save
+                                setActive(assistant, assistant.id);
                             }}
                         >
                             {'Revert'}

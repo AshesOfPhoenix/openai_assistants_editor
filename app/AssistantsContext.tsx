@@ -4,14 +4,14 @@ import { makeOpenAiApiRequest } from '@/lib/openai_api';
 import React, { createContext, useState, useEffect } from 'react';
 
 type AssistantsContext = {
-    assistants: [Assistant] | undefined;
-    setAssistants: React.Dispatch<React.SetStateAction<[Assistant] | undefined>>;
+    assistants: [AssistantCustom] | undefined;
+    setAssistants: React.Dispatch<React.SetStateAction<[AssistantCustom] | undefined>>;
     fetchAssistants: () => Promise<void>;
     fetchModels: () => Promise<void>;
-    activeAssistant: Assistant | undefined;
-    setActiveAssistant: React.Dispatch<React.SetStateAction<Assistant | undefined>>;
+    activeAssistant: AssistantCustom | undefined;
+    setActiveAssistant: React.Dispatch<React.SetStateAction<AssistantCustom | undefined>>;
     modelsList: Model[];
-    modifyAssistant: (assistant: Assistant) => Promise<void>;
+    modifyAssistant: (assistant: AssistantCustom) => Promise<void>;
 };
 
 const Context = createContext<AssistantsContext>({
@@ -25,7 +25,7 @@ const Context = createContext<AssistantsContext>({
     modifyAssistant: async () => {},
 });
 
-const modifyAssistant = async (assistant: Assistant) => {
+const modifyAssistant = async (assistant: AssistantCustom) => {
     try {
         const response = await makeOpenAiApiRequest('/api/assistant/modify', {
             assistant: assistant,
@@ -38,9 +38,9 @@ const modifyAssistant = async (assistant: Assistant) => {
 };
 
 export default function AssistantsProvider({ children }: { children: React.ReactNode }) {
-    const [assistants, setAssistants] = useState<[Assistant]>();
+    const [assistants, setAssistants] = useState<[AssistantCustom]>();
     const [isFetching, setIsFetching] = useState(false);
-    const [activeAssistant, setActiveAssistant] = React.useState<Assistant>();
+    const [activeAssistant, setActiveAssistant] = React.useState<AssistantCustom>();
     const [modelsList, setModelsList] = React.useState<Model[]>([]);
 
     const fetchAssistants = async () => {
@@ -48,7 +48,7 @@ export default function AssistantsProvider({ children }: { children: React.React
         try {
             const response = await makeOpenAiApiRequest('/api/assistant/list', {});
             const data = await response;
-            setAssistants(data as [Assistant]);
+            setAssistants(data as [AssistantCustom]);
         } catch (error) {
             console.error(error);
         } finally {

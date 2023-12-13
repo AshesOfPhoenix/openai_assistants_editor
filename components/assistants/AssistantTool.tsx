@@ -11,7 +11,13 @@ interface ToolTypeIndex {
     [key: string]: ToolType;
 }
 
-const AssistantTool = ({ tool, activeAssistant }: { tool: Tool; activeAssistant: Assistant }) => {
+const AssistantTool = ({
+    tool,
+    activeAssistant,
+}: {
+    tool: Tool;
+    activeAssistant: AssistantCustom;
+}) => {
     return (
         <div className="flex flex-col w-full h-full justify-start py-[6px]">
             <div className="flex flex-1 flex-row justify-between items-center w-full">

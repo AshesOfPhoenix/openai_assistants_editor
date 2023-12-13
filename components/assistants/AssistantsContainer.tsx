@@ -31,11 +31,20 @@ const AssistantsContainer = () => {
     const [open, setOpen] = React.useState(false);
 
     const handleSetActive = React.useCallback(
-        (assistant: Assistant) => {
-            setActiveAssistant(assistant);
-            // Update only the active property of the relevant assistant
+        (assistant: AssistantCustom, id?: string) => {
+            // setActiveAssistant(assistant);
+            if (id) {
+                const selectedAssistant = assistants?.find(
+                    (value: AssistantCustom) => value.id === id
+                );
+                if (selectedAssistant) {
+                    setActiveAssistant(selectedAssistant);
+                }
+            } else {
+                setActiveAssistant(assistant);
+            }
         },
-        [setActiveAssistant]
+        [setActiveAssistant, assistants]
     );
 
     React.useEffect(() => {
@@ -54,7 +63,7 @@ const AssistantsContainer = () => {
                 <CardContent>
                     <div className="flex w-full max-w-full items-start flex-col">
                         <Popover open={open && assistants !== undefined} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
+                            <PopoverTrigger asChild disabled={activeAssistant?.pendingChanges}>
                                 <Button
                                     variant="outline"
                                     role="combobox"
@@ -70,15 +79,15 @@ const AssistantsContainer = () => {
                                     <CommandInput placeholder="Search assistant..." />
                                     <CommandEmpty>No assistants found.</CommandEmpty>
                                     <CommandGroup>
-                                        {assistants?.map((assistant) => (
+                                        {assistants?.map((assistant: AssistantCustom) => (
                                             <CommandItem
                                                 key={assistant.id}
                                                 value={assistant.id}
-                                                onSelect={(currentValue) => {
+                                                onSelect={(currentValue: string) => {
                                                     // setActiveAssistant(currentValue);
                                                     setActiveAssistant(
                                                         assistants?.find(
-                                                            (value: Assistant) =>
+                                                            (value: AssistantCustom) =>
                                                                 value.label === currentValue
                                                         )
                                                     );

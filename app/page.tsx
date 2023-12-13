@@ -1,6 +1,6 @@
 import React from 'react';
 import AssistantsContainer from '@/components/assistants/AssistantsContainer';
-import ChatContainer from '@/components/ChatContainer';
+import ChatContainer from '@/components/chat/ChatContainer';
 import OpenAIKeyButton from '@/components/OpenAIKeyButton';
 import { GPT4 } from '@/components/GPT4';
 
