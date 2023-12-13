@@ -11,11 +11,9 @@ import {
 } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ResumeIcon, UpdateIcon } from '@radix-ui/react-icons';
-import { GetServerSideProps } from 'next';
-import axios from 'axios';
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
-import { getApiKey } from '@/lib/openai_api';
+import { makeOpenAiApiRequest } from '@/lib/openai_api';
 
 const ChatContainer = () => {
     const { assistants, activeAssistant } = useAssistants();
@@ -33,26 +31,17 @@ const ChatContainer = () => {
 
     async function fetchMesagesFromThread(id: string) {
         try {
-            const apiKey = getApiKey();
-
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                },
-            };
-
             // Retrieve the messages from the thread
-            const response = await axios.post('/api/message/list', { threadId: id }, config);
-            const messageList = response.data.answer.data;
+            const response = await makeOpenAiApiRequest('/api/message/list', { threadId: id });
+            const messageList = response.answer.data;
 
             // Retrieve the thread
-            const response2 = await axios.post('/api/thread/retrieve', { threadId: id }, config);
-            let thread = response2.data.answer;
+            const response2 = await makeOpenAiApiRequest('/api/thread/retrieve', { threadId: id });
+            let thread = response2.answer;
 
             // Set as the active thread
             thread = { ...thread, messages: messageList };
             setActiveThread(thread);
-            console.log('Thread => ', thread);
         } catch (error) {
             console.error(error);
         }
@@ -65,22 +54,23 @@ const ChatContainer = () => {
 
     async function waitForRunCompletion(run: any, threadId: any) {
         while (run.status === 'queued' || run.status === 'in_progress') {
-            const response = await axios.post('/api/run/steps/list', {
+            const response = await makeOpenAiApiRequest('/api/run/steps/list', {
                 runId: run.id,
                 threadId: threadId,
             });
-            const steps = await response.data.answer.data;
+            const steps = await response.answer.data;
             console.log('Steps => ', steps);
 
-            const responseRun = await axios.post('/api/run/retrieve', {
+            const responseRun = await makeOpenAiApiRequest('/api/run/retrieve', {
                 runId: run.id,
                 threadId: threadId,
             });
-            run = await responseRun.data.answer;
+            run = await responseRun.answer;
             console.log('Run => ', run);
 
             setTimeout(() => {}, 1000); // Wait for 1 second before checking again
         }
+        console.log('Run finished');
         return run;
     }
 
@@ -93,79 +83,95 @@ const ChatContainer = () => {
             // Pipe 1 - Thread exists
             if (activeThread) {
                 // Step 1- Create message
-                const response = await axios.post('/api/message/create', {
+                const response = await makeOpenAiApiRequest('/api/message/create', {
                     message: question,
                     threadId: activeThread.id,
                 });
-                const message = await response.data.answer;
+                const message = await response.answer;
                 console.log('Message => ', message);
                 // Step 2- Create run
-                const response2 = await axios.post('/api/run/create', {
+                const response2 = await makeOpenAiApiRequest('/api/run/create', {
                     assistantId: activeAssistant!.id,
                     threadId: activeThread.id,
                 });
-                const run = await response2.data.answer;
+                const run = await response2.answer;
                 console.log('Run => ', run);
 
                 const finishedRun = await waitForRunCompletion(run, activeThread.id);
                 console.log('Run Finished => ', finishedRun);
+                await fetchMesagesFromThread(activeThread.id);
             } else if (!activeThread) {
                 // Pipe 2 - Thread does not exist
                 // Step 1- Create thread
-                const response = await axios.post('/api/thread/create', {
+                const response = await makeOpenAiApiRequest('/api/thread/create', {
                     assistantId: activeAssistant!.id,
                 });
-                const thread = await response.data.answer;
+                const thread = await response.answer;
                 console.log('Thread => ', thread);
                 setActiveThread(thread);
                 // Step 2- Create message
-                const response2 = await axios.post('/api/message/create', {
+                const response2 = await makeOpenAiApiRequest('/api/message/create', {
                     message: question,
                     threadId: thread.id,
                 });
-                const message = await response2.data.answer;
+                const message = await response2.answer;
                 console.log('Message => ', message);
                 // Step 3- Create run
-                const response3 = await axios.post('/api/run/create', {
+                const response3 = await makeOpenAiApiRequest('/api/run/create', {
                     assistantId: activeAssistant!.id,
                     threadId: thread.id,
                 });
-                const run = await response3.data.answer;
+                const run = await response3.answer;
                 console.log('Run => ', run);
 
                 const finishedRun = await waitForRunCompletion(run, thread.id);
                 console.log('Run Finished => ', finishedRun);
+                await fetchMesagesFromThread(thread.id);
             }
 
-            await fetchMesagesFromThread(activeThread!.id);
             setQuestion('');
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
         }
-
-        /* setHistory((prevHistory) => [...prevHistory, question]);
-        try {
-            await fetch('/api/assistant', {
-                method: 'POST',
-                body: JSON.stringify({ question, history, activeAssistant }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    console.log(data);
-                    setHistory((prevHistory) => [...prevHistory, data.answer]);
-                });
-        } catch (error) {
-            // Handle any errors that occur during the API call
-            setHistory((prevHistory) => [...prevHistory, 'Something went wrong. Please try again.']);
-        } finally {
-            setIsLoading(false);
-        } */
     }
+
+    const ChatBubble = ({ item, index }: { item: any; index: number }) => {
+        return (
+            <div
+                id={index.toString()}
+                className={`w-full flex flex-1 flex-col py-1 overflow-hidden ${
+                    index % 2 === 0 ? 'items-start' : 'items-end'
+                }`}
+            >
+                <span>
+                    {item.assistant_id && item.role === 'assistant'
+                        ? assistants?.find((assist: Assistant) => assist.id === item.assistant_id)
+                              ?.name ?? 'Unknown'
+                        : item.role === 'user'
+                        ? 'User'
+                        : 'Unknown'}
+                </span>
+                <div
+                    className={`max-w-[500px] flex items-center flex-1 rounded-md border ${
+                        index % 2 === 0
+                            ? 'bg-gradient-to-tl bg-gray-200'
+                            : 'bg-gradient-to-tr bg-yellow-200'
+                    } px-3 py-2 text-sm shadow-sm transition-colors overflow-hidden hover:shadow-sm hover:drop-shadow-sm hover:bg-opacity-40`}
+                >
+                    <div className="break-words overflow-hidden hyphens-auto text-ellipsis text-base text-black font-mono font-medium">
+                        {item.content[0].text.value.split('\n').map((line: string, i: number) => (
+                            <React.Fragment key={i}>
+                                {line}
+                                <br />
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     return (
         <>
@@ -192,44 +198,14 @@ const ChatContainer = () => {
                     >
                         <div className="relative flex w-full max-w-full max-h-[500px] overflow-y-auto items-center flex-col space-y-2">
                             <div className="flex flex-col text-sm w-full pb-9">
-                                {activeThread?.messages.map((item, index) => (
-                                    <div
-                                        key={index.toString()}
-                                        id={index.toString()}
-                                        className={`w-full flex flex-1 flex-col py-1 overflow-hidden ${
-                                            index % 2 === 0 ? 'items-start' : 'items-end'
-                                        }`}
-                                    >
-                                        <span>
-                                            {item.assistant_id && item.role === 'assistant'
-                                                ? assistants?.find(
-                                                      (assist: Assistant) =>
-                                                          assist.id === item.assistant_id
-                                                  )?.name ?? 'Unknown'
-                                                : item.role === 'user'
-                                                ? 'User'
-                                                : 'Unknown'}
-                                        </span>
-                                        <div
-                                            className={`max-w-[500px] flex items-center flex-1 rounded-md border ${
-                                                index % 2 === 0
-                                                    ? 'bg-gradient-to-tl bg-gray-200'
-                                                    : 'bg-gradient-to-tr bg-yellow-200'
-                                            } px-3 py-2 text-sm shadow-sm transition-colors overflow-hidden hover:shadow-md hover:drop-shadow-sm hover:bg-opacity-40`}
-                                        >
-                                            <div className="break-words overflow-hidden hyphens-auto text-ellipsis text-base text-black font-mono font-medium">
-                                                {item.content[0].text.value
-                                                    .split('\n')
-                                                    .map((line: string, i: number) => (
-                                                        <React.Fragment key={i}>
-                                                            {line}
-                                                            <br />
-                                                        </React.Fragment>
-                                                    ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                                {activeThread &&
+                                    activeThread?.messages?.map((item, index) => (
+                                        <ChatBubble
+                                            key={index.toString()}
+                                            item={item}
+                                            index={index}
+                                        />
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -267,22 +243,6 @@ const ChatContainer = () => {
             </Card>
         </>
     );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    try {
-        // Fetch data from external API
-        const res = await fetch('https://.../data');
-        const data = await res.json();
-
-        // Pass data to the page via props
-        return { props: { data } };
-    } catch (error) {
-        console.error('An error occurred while fetching chained data:', error);
-
-        // Return an error state through props or redirect, etc.
-        return { props: { error: 'Failed to fetch data.' } };
-    }
 };
 
 export default ChatContainer;

@@ -16,6 +16,7 @@ interface Metadata {
 interface Assistant {
     [key: string]: any;
     active: boolean;
+    pendingChanges: boolean;
     created_at: number;
     description: string | null;
     file_ids: string[];

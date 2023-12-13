@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 // Constants for localStorage keys and expiry time
 const API_KEY_STORAGE_KEY = 'openai_api_key';
 const EXPIRY_TIME = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
@@ -36,7 +38,7 @@ function handleApiKeySubmit(apiKey: string) {
 }
 
 // When making an API request
-async function makeOpenAiApiRequest() {
+async function makeOpenAiApiRequest(endpoint: string, body?: any, kwargs?: any) {
     const apiKey = getApiKey();
     if (!apiKey) {
         // Prompt user for their API key as it's either not set or expired
@@ -44,7 +46,17 @@ async function makeOpenAiApiRequest() {
         return;
     }
 
-    // Use the apiKey for your OpenAI API request here...
+    const config = {
+        ...kwargs,
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+        },
+    };
+
+    const response = await axios.post(endpoint, body, config);
+    const data = await response.data;
+    console.log(data);
+    return data;
 }
 
-export { handleApiKeySubmit, clearApiKey, getApiKey };
+export { handleApiKeySubmit, clearApiKey, getApiKey, makeOpenAiApiRequest };

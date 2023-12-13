@@ -1,8 +1,7 @@
 'use client';
 
-import { getApiKey } from '@/lib/openai_api';
-import axios from 'axios';
-import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { makeOpenAiApiRequest } from '@/lib/openai_api';
+import React, { createContext, useState, useEffect } from 'react';
 
 type AssistantsContext = {
     assistants: [Assistant] | undefined;
@@ -12,6 +11,7 @@ type AssistantsContext = {
     activeAssistant: Assistant | undefined;
     setActiveAssistant: React.Dispatch<React.SetStateAction<Assistant | undefined>>;
     modelsList: Model[];
+    modifyAssistant: (assistant: Assistant) => Promise<void>;
 };
 
 const Context = createContext<AssistantsContext>({
@@ -22,7 +22,20 @@ const Context = createContext<AssistantsContext>({
     activeAssistant: undefined,
     setActiveAssistant: () => {},
     modelsList: [],
+    modifyAssistant: async () => {},
 });
+
+const modifyAssistant = async (assistant: Assistant) => {
+    try {
+        const response = await makeOpenAiApiRequest('/api/assistant/modify', {
+            assistant: assistant,
+        });
+        const data = await response;
+        return data;
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 export default function AssistantsProvider({ children }: { children: React.ReactNode }) {
     const [assistants, setAssistants] = useState<[Assistant]>();
@@ -33,17 +46,8 @@ export default function AssistantsProvider({ children }: { children: React.React
     const fetchAssistants = async () => {
         setIsFetching(true);
         try {
-            const apiKey = getApiKey();
-
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                },
-            };
-
-            const response = await axios.post('/api/assistant/list', {}, config);
-
-            const data = await response.data;
+            const response = await makeOpenAiApiRequest('/api/assistant/list', {});
+            const data = await response;
             setAssistants(data as [Assistant]);
         } catch (error) {
             console.error(error);
@@ -55,17 +59,8 @@ export default function AssistantsProvider({ children }: { children: React.React
     const fetchModels = async () => {
         setIsFetching(true);
         try {
-            const apiKey = getApiKey();
-
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                },
-            };
-
-            const response = await axios.post('/api/models', {}, config);
-
-            const data = await response.data;
+            const response = await makeOpenAiApiRequest('/api/models', {});
+            const data = await response;
             console.log('Models => ', data);
             let models = data
                 .filter((assistant: any) => assistant.id.startsWith('gpt'))
@@ -97,6 +92,7 @@ export default function AssistantsProvider({ children }: { children: React.React
                 activeAssistant,
                 setActiveAssistant,
                 modelsList,
+                modifyAssistant,
             }}
         >
             {children}

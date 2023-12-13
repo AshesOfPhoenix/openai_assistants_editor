@@ -1,20 +1,27 @@
 import React from 'react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 
 import AssistantTool from './AssistantTool';
-import { Separator } from '../ui/separator';
+import { Separator } from '@/components/ui/separator';
 
 import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CaretSortIcon, PlusIcon } from '@radix-ui/react-icons';
-import { Textarea } from '../ui/textarea';
-import '../../app/styles/scrollbar.css';
+import { Textarea } from '@/components/ui/textarea';
+import '@/app/styles/scrollbar.css';
 import { useAssistants } from '@/app/AssistantsContext';
+import { makeOpenAiApiRequest } from '@/lib/openai_api';
 
 const AssisstantBox = ({
     assistant,
@@ -23,8 +30,9 @@ const AssisstantBox = ({
     assistant: Assistant;
     setActive: (assistant: Assistant) => void;
 }) => {
-    const { modelsList } = useAssistants();
-    let { name, description, active, tools, id, file_ids, instructions, model } = assistant;
+    const { modelsList, assistants, setAssistants } = useAssistants();
+    let { name, description, active, tools, id, file_ids, instructions, model, pendingChanges } =
+        assistant;
     const [open, setOpen] = React.useState(false);
     const [assistantModelId, setAssistantModelId] = React.useState<string>();
 
@@ -37,7 +45,7 @@ const AssisstantBox = ({
     // const toolTypeString = (ToolType as ToolTypeIndex)[tools[0].type];
 
     return (
-        <div className="flex flex-1 flex-col justify-start items-center w-full p-1 border rounded-md mt-2 gap-2">
+        <div className="flex flex-1 flex-col justify-start items-center w-full p-1 border rounded-md mt-2 gap-2 overflow-auto">
             <Collapsible className="w-full" defaultOpen>
                 <div className="flex items-center justify-between space-x-4">
                     <p className="text-sm font-bold">Instructions</p>
@@ -53,7 +61,14 @@ const AssisstantBox = ({
                         className="flex w-full min-h-[200px] max-h-[400px] text-sm font-mono text-gray-600 break-words overflow-auto hyphens-auto"
                         id="instructions"
                         value={!instructions ? '' : instructions}
-                        onChange={(e) => {}}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            const updatedAssistant = { ...assistant, instructions: value };
+                            const updatedAssistants = assistants?.map((a: Assistant) =>
+                                a.id === assistant.id ? updatedAssistant : a
+                            );
+                            setAssistants(updatedAssistants as [Assistant]);
+                        }}
                     ></Textarea>
                 </CollapsibleContent>
             </Collapsible>
@@ -68,7 +83,8 @@ const AssisstantBox = ({
                             className="w-full justify-between"
                         >
                             {assistantModelId
-                                ? modelsList?.find((model: Model) => model.id === assistantModelId)?.id
+                                ? modelsList?.find((model: Model) => model.id === assistantModelId)
+                                      ?.id
                                 : 'Select model...'}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -91,7 +107,9 @@ const AssisstantBox = ({
                                         <Check
                                             className={cn(
                                                 'mr-2 h-4 w-4',
-                                                assistantModelId === model.id ? 'opacity-100' : 'opacity-0'
+                                                assistantModelId === model.id
+                                                    ? 'opacity-100'
+                                                    : 'opacity-0'
                                             )}
                                         />
                                         {model.id}
@@ -116,33 +134,48 @@ const AssisstantBox = ({
                         </div>
                     </div>
                     {file_ids?.map((file_id: string, index: number) => (
-                        <Button key={index.toString()} variant={'outline'} className="rounded-lg h-6">
+                        <Button
+                            key={index.toString()}
+                            variant={'outline'}
+                            className="rounded-lg h-6"
+                        >
                             <p className="text-sm font-mono text-gray-600">{`File ${index + 1}`}</p>
                         </Button>
                     ))}
                 </div>
             </div>
-            <Separator className="bg-gray-300" />
-            <div className="flex flex-row w-full justify-between space-x-2">
-                <Button
-                    variant={'secondary'}
-                    className="w-full"
-                    onClick={() => {
-                        // implement save
-                    }}
-                >
-                    {'Revert'}
-                </Button>
-                <Button
-                    variant={'default'}
-                    className="w-full"
-                    onClick={() => {
-                        // implement save
-                    }}
-                >
-                    {'Save'}
-                </Button>
-            </div>
+            {pendingChanges && (
+                <>
+                    <Separator className="bg-gray-300" />
+                    <div className="flex flex-row w-full justify-between space-x-2">
+                        <Button
+                            variant={'secondary'}
+                            className="w-full"
+                            onClick={() => {
+                                // implement save
+                            }}
+                        >
+                            {'Revert'}
+                        </Button>
+                        <Button
+                            variant={'default'}
+                            className="w-full"
+                            onClick={async () => {
+                                const response = await makeOpenAiApiRequest(
+                                    '/api/assistant/modify',
+                                    {
+                                        assistant: assistant,
+                                    }
+                                );
+                                const data = await response;
+                                console.log('data => ', data);
+                            }}
+                        >
+                            {'Save'}
+                        </Button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

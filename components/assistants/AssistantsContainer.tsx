@@ -1,7 +1,13 @@
 'use client';
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
-import { Switch } from '../ui/switch';
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardDescription,
+    CardContent,
+    CardFooter,
+} from '@/components/ui/card';
 import { ReloadIcon } from '@radix-ui/react-icons';
 import { useAssistants } from '@/app/AssistantsContext';
 import AssisstantBox from './AssisstantBox';
@@ -10,11 +16,18 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+} from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const AssistantsContainer = () => {
-    const { assistants, setAssistants, fetchAssistants, activeAssistant, setActiveAssistant } = useAssistants();
+    const { assistants, setAssistants, fetchAssistants, activeAssistant, setActiveAssistant } =
+        useAssistants();
     const [open, setOpen] = React.useState(false);
 
     const handleSetActive = React.useCallback(
@@ -40,7 +53,7 @@ const AssistantsContainer = () => {
                 </CardHeader>
                 <CardContent>
                     <div className="flex w-full max-w-full items-start flex-col">
-                        <Popover open={open} onOpenChange={setOpen}>
+                        <Popover open={open && assistants !== undefined} onOpenChange={setOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant="outline"
@@ -65,7 +78,8 @@ const AssistantsContainer = () => {
                                                     // setActiveAssistant(currentValue);
                                                     setActiveAssistant(
                                                         assistants?.find(
-                                                            (value: Assistant) => value.label === currentValue
+                                                            (value: Assistant) =>
+                                                                value.label === currentValue
                                                         )
                                                     );
                                                     setOpen(false);
@@ -87,14 +101,24 @@ const AssistantsContainer = () => {
                                 </Command>
                             </PopoverContent>
                         </Popover>
-                        <p className="text-sm font-mono text-gray-400 pt-1 pl-2 pb-2">{activeAssistant?.label}</p>
-                        {assistants ? (
-                            activeAssistant ? (
-                                <AssisstantBox assistant={activeAssistant} setActive={handleSetActive} />
-                            ) : null
-                        ) : (
-                            <ReloadIcon className="w-6 h-6 animate-spin" onClick={() => fetchAssistants()} />
-                        )}
+                        <p className="text-sm font-mono text-gray-400 pt-1 pl-2 pb-2">
+                            {activeAssistant?.label}
+                        </p>
+                        <div className="flex flex-1 w-full overflow-auto">
+                            {assistants ? (
+                                activeAssistant ? (
+                                    <AssisstantBox
+                                        assistant={activeAssistant}
+                                        setActive={handleSetActive}
+                                    />
+                                ) : null
+                            ) : (
+                                <ReloadIcon
+                                    className="w-6 h-6 animate-spin"
+                                    onClick={() => fetchAssistants()}
+                                />
+                            )}
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter className="">

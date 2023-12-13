@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter as FontSans } from 'next/font/google';
-import './globals.css';
+import './styles/globals.css';
 import { cn } from '@/lib/utils';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
@@ -12,7 +12,7 @@ export const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-    title: 'CalnomicsGPT',
+    title: 'GptnomicsGPT',
     description: 'GPTs Assistant',
 };
 
