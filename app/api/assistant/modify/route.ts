@@ -14,7 +14,20 @@ export async function POST(req: NextRequest) {
         const assistant = data.assistant;
 
         const openai = new OpenAI({ apiKey: openAIApiKey });
-        const response = await openai.beta.assistants.update(assistant.id, { ...assistant });
+        const { name, tools, file_ids, instructions, model }: Assistant = assistant;
+
+        //! TODO: Implement tool saving with custom functions
+        const formatedTools = tools.map((tool) => {
+            return {
+                type: tool.type,
+            };
+        });
+        const response = await openai.beta.assistants.update(assistant.id, {
+            name,
+            file_ids,
+            instructions,
+            model,
+        });
 
         return NextResponse.json(response, { status: 200 });
     } catch (err) {

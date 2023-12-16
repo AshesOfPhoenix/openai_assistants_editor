@@ -15,17 +15,12 @@ interface Metadata {
 
 interface Assistant {
     [key: string]: any;
-    created_at: number;
-    description: string | null;
-    file_ids: string[];
-    id: string;
-    instructions: string;
-    metadata: Metadata;
-    model: string;
     name: string;
-    object: string;
+    description: string | null;
+    model: string;
+    instructions: string;
     tools: Tool[];
-    label: string;
+    file_ids: string[];
 }
 
 interface AssistantCustom {

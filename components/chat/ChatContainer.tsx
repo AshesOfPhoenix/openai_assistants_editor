@@ -183,7 +183,7 @@ const ChatContainer = () => {
                         <p className="font-semibold text-xs">
                             THREAD{' '}
                             <span className="text-sm font-mono text-gray-400 pt-1 pl-2 pb-2">
-                                {activeThread?.id}
+                                {activeThread?.id ?? '<empty>'}
                             </span>
                         </p>
                     </div>

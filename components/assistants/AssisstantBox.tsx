@@ -190,6 +190,9 @@ const AssisstantBox = ({
                                     }
                                 );
                                 const data = await response;
+                                if (data) {
+                                    setActive({ ...assistant, pendingChanges: false });
+                                }
                                 console.log('data => ', data);
                             }}
                         >
