@@ -161,7 +161,7 @@ const ChatContainer = () => {
                             : 'bg-gradient-to-tr bg-yellow-200'
                     } px-3 py-2 text-sm shadow-sm transition-colors overflow-hidden hover:shadow-sm hover:drop-shadow-sm hover:bg-opacity-40`}
                 >
-                    <div className="break-words overflow-hidden hyphens-auto text-ellipsis text-base text-black font-mono font-medium">
+                    <div className="overflow-hidden font-mono text-base font-medium text-black break-words hyphens-auto text-ellipsis">
                         {item.content[0].text.value.split('\n').map((line: string, i: number) => (
                             <React.Fragment key={i}>
                                 {line}
@@ -178,11 +178,11 @@ const ChatContainer = () => {
         <>
             <Card className="border-b border-gray-300 overflow-hidden z-50 bg-gradient-to-b from-zinc-100 pb-6 pt-4 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static w-[100%] max-w-3xl lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
                 <CardHeader>
-                    <div className="flex flex-row justify-between items-center">
+                    <div className="flex flex-row items-center justify-between">
                         <CardTitle>SupassistGPT</CardTitle>
-                        <p className="font-semibold text-xs">
+                        <p className="text-xs font-semibold">
                             THREAD{' '}
-                            <span className="text-sm font-mono text-gray-400 pt-1 pl-2 pb-2">
+                            <span className="pt-1 pb-2 pl-2 font-mono text-sm text-gray-400">
                                 {activeThread?.id ?? '<empty>'}
                             </span>
                         </p>
@@ -198,7 +198,7 @@ const ChatContainer = () => {
                         }`}
                     >
                         <div className="relative flex w-full max-w-full max-h-[500px] overflow-y-auto items-center flex-col space-y-2">
-                            <div className="flex flex-col text-sm w-full pb-9">
+                            <div className="flex flex-col w-full text-sm pb-9">
                                 {activeThread &&
                                     activeThread?.messages?.map((item, index) => (
                                         <ChatBubble
@@ -212,7 +212,7 @@ const ChatContainer = () => {
                     </div>
                 </CardContent>
                 <CardFooter className="">
-                    <div className="flex flex-1 flex-row justify-between items-end space-x-2">
+                    <div className="flex flex-row items-end justify-between flex-1 space-x-2">
                         <Textarea
                             className="w-full break-words overflow-hidden hyphens-auto min-h-[36px] h-9 max-h-20"
                             placeholder="When am I free?"

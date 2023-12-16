@@ -65,13 +65,13 @@ const AssisstantBox = ({
     }, [instructions, model, file_ids, tools, name, description]);
 
     return (
-        <div className="flex flex-1 flex-col justify-start items-center w-full p-1 border rounded-md mt-2 gap-2 overflow-auto">
+        <div className="flex flex-col items-center justify-start flex-1 w-full gap-2 p-1 mt-2 overflow-auto border rounded-md">
             <Collapsible className="w-full" defaultOpen>
                 <div className="flex items-center justify-between space-x-4">
                     <p className="text-sm font-bold">Instructions</p>
                     <CollapsibleTrigger asChild>
                         <Button variant="ghost" size="sm">
-                            <CaretSortIcon className="h-4 w-4" />
+                            <CaretSortIcon className="w-4 h-4" />
                             <span className="sr-only">Toggle</span>
                         </Button>
                     </CollapsibleTrigger>
@@ -89,21 +89,21 @@ const AssisstantBox = ({
                     ></Textarea>
                 </CollapsibleContent>
             </Collapsible>
-            <div className="flex flex-col w-full items-start justify-start">
-                <p className="text-sm font-bold pb-1">Models</p>
+            <div className="flex flex-col items-start justify-start w-full">
+                <p className="pb-1 text-sm font-bold">Models</p>
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                         <Button
                             variant="outline"
                             role="combobox"
                             aria-expanded={open}
-                            className="w-full justify-between"
+                            className="justify-between w-full"
                         >
                             {assistantModelId
                                 ? modelsList?.find((model: Model) => model.id === assistantModelId)
                                       ?.id
                                 : 'Select model...'}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
@@ -142,26 +142,26 @@ const AssisstantBox = ({
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className="flex flex-col w-full items-start justify-start">
-                <p className="text-sm font-bold pb-1">Tools</p>
+            <div className="flex flex-col items-start justify-start w-full">
+                <p className="pb-1 text-sm font-bold">Tools</p>
                 {tools.map((tool: Tool, index: number) => (
                     <AssistantTool key={index.toString()} tool={tool} activeAssistant={assistant} />
                 ))}
-                <div className="flex flex-col w-full items-start justify-center">
-                    <div className="flex flex-row w-full h-8 items-center justify-between mb-1">
+                <div className="flex flex-col items-start justify-center w-full">
+                    <div className="flex flex-row items-center justify-between w-full h-8 mb-1">
                         <p className="text-sm font-bold">Files</p>
 
-                        <div className="rounded-full flex justify-center items-center hover:bg-gray-300 hover:shadow-md h-6 w-6">
-                            <PlusIcon className="text-black h-4 w-4 hover:scale-105" />
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full hover:bg-gray-300 hover:shadow-md">
+                            <PlusIcon className="w-4 h-4 text-black hover:scale-105" />
                         </div>
                     </div>
                     {file_ids?.map((file_id: string, index: number) => (
                         <Button
                             key={index.toString()}
                             variant={'outline'}
-                            className="rounded-lg h-6"
+                            className="h-6 rounded-lg"
                         >
-                            <p className="text-sm font-mono text-gray-600">{`File ${index + 1}`}</p>
+                            <p className="font-mono text-sm text-gray-600">{`File ${index + 1}`}</p>
                         </Button>
                     ))}
                 </div>
@@ -169,7 +169,7 @@ const AssisstantBox = ({
             {pendingChanges && (
                 <>
                     <Separator className="bg-gray-300" />
-                    <div className="flex flex-row w-full justify-between space-x-2">
+                    <div className="flex flex-row justify-between w-full space-x-2">
                         <Button
                             variant={'secondary'}
                             className="w-full"

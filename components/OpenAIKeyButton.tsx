@@ -51,7 +51,7 @@ const OpenAIKeyButton = ({ className }: { className?: string }) => {
             onClick={() => setIsEditing(true)}
         >
             {!isEditing && (
-                <div className="flex w-full h-9 p-0 justify-center items-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:rounded-lg lg:border lg:bg-gray-200 lg:dark:bg-zinc-800/30 cursor-pointer">
+                <div className="flex items-center justify-center w-full p-0 border-b border-gray-300 cursor-pointer h-9 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:rounded-lg lg:border lg:bg-gray-200 lg:dark:bg-zinc-800/30">
                     {apiKey ? 'Change API key' : 'Enter API Key'}
                 </div>
             )}
@@ -62,7 +62,7 @@ const OpenAIKeyButton = ({ className }: { className?: string }) => {
                     value={apiKey || ''}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    className="flex flex-1 py-0 justify-center items-center text-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:rounded-lg lg:border lg:bg-gray-200 lg:dark:bg-zinc-800/30"
+                    className="flex items-center justify-center flex-1 py-0 text-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:rounded-lg lg:border lg:bg-gray-200 lg:dark:bg-zinc-800/30"
                 />
             )}
         </div>

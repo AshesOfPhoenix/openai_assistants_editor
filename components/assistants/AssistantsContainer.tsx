@@ -67,17 +67,17 @@ const AssistantsContainer = () => {
                     <CardDescription>Activate GPTs</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex w-full max-w-full items-start flex-col">
+                    <div className="flex flex-col items-start w-full max-w-full">
                         <Popover open={open && assistants !== undefined} onOpenChange={setOpen}>
                             <PopoverTrigger asChild disabled={activeAssistant?.pendingChanges}>
                                 <Button
                                     variant="outline"
                                     role="combobox"
                                     aria-expanded={open}
-                                    className="w-full justify-between"
+                                    className="justify-between w-full"
                                 >
                                     {activeAssistant ? activeAssistant.name : 'Select assistant...'}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-[200px] p-0">
@@ -116,7 +116,7 @@ const AssistantsContainer = () => {
                                 </Command>
                             </PopoverContent>
                         </Popover>
-                        <p className="text-sm font-mono text-gray-400 pt-1 pl-2 pb-2">
+                        <p className="pt-1 pb-2 pl-2 font-mono text-sm text-gray-400">
                             {activeAssistant?.label}
                         </p>
                         <div className="flex flex-1 w-full overflow-auto">
@@ -137,7 +137,7 @@ const AssistantsContainer = () => {
                     </div>
                 </CardContent>
                 <CardFooter className="">
-                    <div className="flex flex-1 flex-row justify-between items-center space-x-2"></div>
+                    <div className="flex flex-row items-center justify-between flex-1 space-x-2"></div>
                 </CardFooter>
             </Card>
         </>
