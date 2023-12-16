@@ -12,6 +12,7 @@ type AssistantsContext = {
     setActiveAssistant: React.Dispatch<React.SetStateAction<AssistantCustom | undefined>>;
     modelsList: Model[];
     modifyAssistant: (assistant: AssistantCustom) => Promise<void>;
+    isFetchingAssistants: boolean;
 };
 
 const Context = createContext<AssistantsContext>({
@@ -23,6 +24,7 @@ const Context = createContext<AssistantsContext>({
     setActiveAssistant: () => {},
     modelsList: [],
     modifyAssistant: async () => {},
+    isFetchingAssistants: false,
 });
 
 const modifyAssistant = async (assistant: AssistantCustom) => {
@@ -39,12 +41,12 @@ const modifyAssistant = async (assistant: AssistantCustom) => {
 
 export default function AssistantsProvider({ children }: { children: React.ReactNode }) {
     const [assistants, setAssistants] = useState<[AssistantCustom]>();
-    const [isFetching, setIsFetching] = useState(false);
+    const [isFetchingAssistants, setIsFetchingAssistants] = useState(false);
     const [activeAssistant, setActiveAssistant] = React.useState<AssistantCustom>();
     const [modelsList, setModelsList] = React.useState<Model[]>([]);
 
     const fetchAssistants = async () => {
-        setIsFetching(true);
+        setIsFetchingAssistants(true);
         try {
             const response = await makeOpenAiApiRequest('/api/assistant/list', {});
             const data = await response;
@@ -52,12 +54,12 @@ export default function AssistantsProvider({ children }: { children: React.React
         } catch (error) {
             console.error(error);
         } finally {
-            setIsFetching(false);
+            setIsFetchingAssistants(false);
         }
     };
 
     const fetchModels = async () => {
-        setIsFetching(true);
+        setIsFetchingAssistants(true);
         try {
             const response = await makeOpenAiApiRequest('/api/models', {});
             const data = await response;
@@ -73,7 +75,7 @@ export default function AssistantsProvider({ children }: { children: React.React
         } catch (error) {
             console.error(error);
         } finally {
-            setIsFetching(false);
+            setIsFetchingAssistants(false);
         }
     };
 
@@ -93,6 +95,7 @@ export default function AssistantsProvider({ children }: { children: React.React
                 setActiveAssistant,
                 modelsList,
                 modifyAssistant,
+                isFetchingAssistants,
             }}
         >
             {children}

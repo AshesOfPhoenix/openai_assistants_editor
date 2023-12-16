@@ -26,8 +26,14 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const AssistantsContainer = () => {
-    const { assistants, setAssistants, fetchAssistants, activeAssistant, setActiveAssistant } =
-        useAssistants();
+    const {
+        assistants,
+        setAssistants,
+        fetchAssistants,
+        activeAssistant,
+        setActiveAssistant,
+        isFetchingAssistants,
+    } = useAssistants();
     const [open, setOpen] = React.useState(false);
 
     const handleSetActive = React.useCallback(
@@ -121,12 +127,12 @@ const AssistantsContainer = () => {
                                         setActive={handleSetActive}
                                     />
                                 ) : null
-                            ) : (
+                            ) : isFetchingAssistants ? (
                                 <ReloadIcon
                                     className="w-6 h-6 animate-spin"
                                     onClick={() => fetchAssistants()}
                                 />
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </CardContent>
