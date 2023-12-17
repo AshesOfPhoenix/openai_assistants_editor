@@ -1,27 +1,30 @@
-import type { Metadata } from 'next';
-import { Inter as FontSans } from 'next/font/google';
-import './styles/globals.css';
-import { cn } from '@/lib/utils';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
-import AssistantsProvider from '@/app/AssistantsContext';
+import AssistantsProvider from '@/app/AssistantsContext'
+import Footer from '@/components/Footer'
+import { cn } from '@/lib/utils'
+import type { Metadata } from 'next'
+import { Inter as FontSans } from 'next/font/google'
+import './styles/globals.css'
 
 export const fontSans = FontSans({
     subsets: ['latin'],
     variable: '--font-sans',
-});
+})
 
 export const metadata: Metadata = {
     title: 'GptnomicsGPT',
     description: 'GPTs Assistant',
-};
+}
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+    children,
+}: {
+    children: React.ReactNode
+}) {
     return (
         <html lang="en">
             <body
                 className={cn(
-                    'relative z-0 flex w-full h-full bg-background font-sans antialiased grainy',
+                    'grainy relative z-0 flex h-full w-full bg-background font-sans antialiased',
                     fontSans.variable
                 )}
             >
@@ -32,5 +35,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </AssistantsProvider>
             </body>
         </html>
-    );
+    )
 }

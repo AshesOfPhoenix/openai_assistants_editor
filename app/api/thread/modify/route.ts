@@ -1,27 +1,30 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { NextRequest, NextResponse } from 'next/server'
+import OpenAI from 'openai'
 
 export async function POST(req: NextRequest) {
     try {
-        console.log(`POST /api/thread/modify ${JSON.stringify(req.body)}`);
+        console.log(`POST /api/thread/modify ${JSON.stringify(req.body)}`)
 
-        const openAIApiKey = req.headers.get('Authorization')?.split(' ')[1];
+        const openAIApiKey = req.headers.get('Authorization')?.split(' ')[1]
         if (!openAIApiKey) {
-            throw new Error('No OpenAI API key provided');
+            throw new Error('No OpenAI API key provided')
         }
 
-        const openai = new OpenAI({ apiKey: openAIApiKey });
-        const data = await req.json();
-        const threadId = data.threadId;
-        const metadata = data.metadata;
+        const openai = new OpenAI({ apiKey: openAIApiKey })
+        const data = await req.json()
+        const threadId = data.threadId
+        const metadata = data.metadata
 
         const thread = await openai.beta.threads.update(threadId, {
             metadata: metadata,
-        });
+        })
 
-        return NextResponse.json({ answer: thread }, { status: 200 });
+        return NextResponse.json({ answer: thread }, { status: 200 })
     } catch (err) {
-        console.log(err);
-        return NextResponse.json({ answer: 'Something went wrong!' }, { status: 500 });
+        console.log(err)
+        return NextResponse.json(
+            { answer: 'Something went wrong!' },
+            { status: 500 }
+        )
     }
 }

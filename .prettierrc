@@ -1,0 +1,13 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "plugins": [
+        "prettier-plugin-organize-attributes",
+        "prettier-plugin-organize-imports",
+        "prettier-plugin-style-order",
+        "prettier-plugin-tailwindcss"
+    ],
+    "attributeGroups": ["^class$", "^(id|name)$", "$DEFAULT", "^aria-"]
+}
