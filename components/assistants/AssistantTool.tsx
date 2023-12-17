@@ -13,9 +13,11 @@ interface ToolTypeIndex {
 const AssistantTool = ({
     tool,
     activeAssistant,
+    setActive,
 }: {
     tool: Tool
     activeAssistant: AssistantCustom
+    setActive: (tool: Tool) => void
 }) => {
     return (
         <div className="flex h-full w-full flex-col justify-start py-[6px]">
@@ -24,7 +26,12 @@ const AssistantTool = ({
                     {(ToolType as ToolTypeIndex)[tool.type]}
                 </p>
                 <div className="flex h-full justify-center">
-                    <Switch />
+                    <Switch
+                        checked={tool.active}
+                        onCheckedChange={async () => {
+                            setActive(tool)
+                        }}
+                    />
                 </div>
             </div>
             <span className="text-xs">{tool?.function?.description}</span>

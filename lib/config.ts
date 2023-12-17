@@ -1,12 +1,14 @@
 interface ToolFunction {
     name: string
     description: string
+
     parameters: { properties: {}; required: string[]; type: string }
 }
 
 interface Tool {
     type: string
-    function: ToolFunction
+    active: boolean
+    function?: ToolFunction
 }
 
 interface Metadata {
@@ -37,6 +39,7 @@ interface AssistantCustom {
     object: string
     tools: Tool[]
     label: string
+    files: any[]
 }
 
 interface Model {

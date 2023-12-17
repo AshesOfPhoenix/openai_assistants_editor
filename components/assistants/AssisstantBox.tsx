@@ -44,7 +44,7 @@ const AssisstantBox = ({
         description,
         tools,
         id,
-        file_ids,
+        files,
         instructions,
         model,
         pendingChanges,
@@ -69,11 +69,26 @@ const AssisstantBox = ({
             (a: AssistantCustom) => a.id === id
         )
         if (matchingAssistant) {
+            console.log('matchingAssistant.tools => ', matchingAssistant.tools)
+            console.log('tools => ', tools)
+
+            // compare each tool in the matching assistant with the tool in the active assistant, only compare active property
+            // if they are different, set pendingChanges to true
+            // if they are the same, set pendingChanges to false
+            for (const tool of tools) {
+                const matchingTool = matchingAssistant.tools.find(
+                    (t: Tool) => t.type === tool.type
+                )
+                if (matchingTool && matchingTool.active !== tool.active) {
+                    setActive({ ...assistant, pendingChanges: true })
+                    return
+                }
+            }
+
             if (
                 matchingAssistant.instructions !== instructions ||
                 matchingAssistant.model !== model ||
-                matchingAssistant.file_ids !== file_ids ||
-                matchingAssistant.tools !== tools ||
+                matchingAssistant.files !== files ||
                 matchingAssistant.name !== name ||
                 matchingAssistant.description !== description
             ) {
@@ -83,7 +98,26 @@ const AssisstantBox = ({
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [instructions, model, file_ids, tools, name, description])
+    }, [instructions, model, files, tools, name, description])
+
+    const setActiveTool = (tool: Tool) => {
+        // set a tool with the same type it's property active
+        // if the tool is already active, set it to inactive
+
+        const updatedTools = tools.map((t: Tool) => {
+            if (t.type === tool.type) {
+                return { ...t, active: !t.active }
+            } else {
+                return t
+            }
+        })
+        const updatedAssistant = {
+            ...assistant,
+            tools: updatedTools,
+        }
+
+        setActive(updatedAssistant)
+    }
 
     return (
         <div className="mt-2 flex w-full flex-1 flex-col items-center justify-start gap-2 overflow-auto rounded-md border p-1">
@@ -178,6 +212,7 @@ const AssisstantBox = ({
                         key={index.toString()}
                         tool={tool}
                         activeAssistant={assistant}
+                        setActive={setActiveTool}
                     />
                 ))}
                 <div className="flex w-full flex-col items-start justify-center">
@@ -188,15 +223,13 @@ const AssisstantBox = ({
                             <PlusIcon className="h-4 w-4 text-black hover:scale-105" />
                         </div>
                     </div>
-                    {file_ids?.map((file_id: string, index: number) => (
+                    {files?.map((file: any, index: number) => (
                         <Button
                             key={index.toString()}
                             variant={'outline'}
                             className="h-6 rounded-lg"
                         >
-                            <p className="font-mono text-sm text-gray-600">{`File ${
-                                index + 1
-                            }`}</p>
+                            <p className="font-mono text-sm text-gray-600">{`${file.filename}`}</p>
                         </Button>
                     ))}
                 </div>

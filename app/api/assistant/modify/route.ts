@@ -18,9 +18,19 @@ export async function POST(req: NextRequest) {
             assistant
 
         //! TODO: Implement tool saving with custom functions
-        const formatedTools = tools.map((tool) => {
-            return {
-                type: tool.type,
+        // Filter tools with active set to false
+        const activeTools = tools.filter((tool) => tool.active)
+        const formatedTools = activeTools.map((tool) => {
+            const { active, ...rest } = tool
+
+            if (tool.type === 'code_interpreter') {
+                return rest as OpenAI.Beta.Assistants.AssistantUpdateParams.AssistantToolsCode
+            } else if (tool.type === 'retrieval') {
+                return rest as OpenAI.Beta.Assistants.AssistantUpdateParams.AssistantToolsRetrieval
+            } else if (tool.type === 'function') {
+                return rest as OpenAI.Beta.Assistants.AssistantUpdateParams.AssistantToolsFunction
+            } else {
+                throw new Error(`Invalid tool type: ${tool.type}`)
             }
         })
         const response = await openai.beta.assistants.update(assistant.id, {
@@ -28,6 +38,7 @@ export async function POST(req: NextRequest) {
             file_ids,
             instructions,
             model,
+            tools: formatedTools,
         })
 
         return NextResponse.json(response, { status: 200 })

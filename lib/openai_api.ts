@@ -41,9 +41,10 @@ function handleApiKeySubmit(apiKey: string) {
 async function makeOpenAiApiRequest(
     endpoint: string,
     body?: any,
+    apiKeyForced?: string | undefined,
     kwargs?: any
 ) {
-    const apiKey = getApiKey()
+    const apiKey = apiKeyForced ?? getApiKey()
     if (!apiKey) {
         // Prompt user for their API key as it's either not set or expired
         console.log('API key is required or has expired.')
@@ -59,7 +60,7 @@ async function makeOpenAiApiRequest(
 
     const response = await axios.post(endpoint, body, config)
     const data = await response.data
-    console.log(data)
+
     return data
 }
 
