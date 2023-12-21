@@ -15,6 +15,12 @@ import { ResumeIcon, UpdateIcon } from '@radix-ui/react-icons'
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
 
+/**
+ * Fetches messages from a thread and sets it as the active thread.
+ *
+ * @param {string} id - The ID of the thread.
+ * @return {Promise<void>}
+ */
 const ChatContainer = () => {
     const { assistants, activeAssistant } = useAssistants()
     const [question, setQuestion] = React.useState('')

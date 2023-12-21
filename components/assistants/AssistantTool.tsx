@@ -10,6 +10,15 @@ interface ToolTypeIndex {
     [key: string]: ToolType
 }
 
+/**
+ * Renders the Assistant Tool component.
+ *
+ * @param {Object} props - The component props.
+ * @param {Tool} props.tool - The tool object.
+ * @param {AssistantCustom} props.activeAssistant - The active assistant.
+ * @param {function} props.setActive - The function to set the active tool.
+ * @return {JSX.Element} - The rendered Assistant Tool component.
+ */
 const AssistantTool = ({
     tool,
     activeAssistant,

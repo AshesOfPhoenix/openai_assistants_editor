@@ -15,7 +15,6 @@ type AssistantsContext = {
         React.SetStateAction<AssistantCustom | undefined>
     >
     modelsList: Model[]
-    modifyAssistant: (assistant: AssistantCustom) => Promise<void>
     isFetchingAssistants: boolean
 }
 
@@ -27,21 +26,8 @@ const Context = createContext<AssistantsContext>({
     activeAssistant: undefined,
     setActiveAssistant: () => {},
     modelsList: [],
-    modifyAssistant: async () => {},
     isFetchingAssistants: false,
 })
-
-const modifyAssistant = async (assistant: AssistantCustom) => {
-    try {
-        const response = await makeOpenAiApiRequest('/api/assistant/modify', {
-            assistant: assistant,
-        })
-        const data = await response
-        return data
-    } catch (error) {
-        console.error(error)
-    }
-}
 
 export default function AssistantsProvider({
     children,
@@ -109,7 +95,6 @@ export default function AssistantsProvider({
                 activeAssistant,
                 setActiveAssistant,
                 modelsList,
-                modifyAssistant,
                 isFetchingAssistants,
             }}
         >

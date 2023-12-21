@@ -1,6 +1,11 @@
 import { cn } from '@/lib/utils'
 import { LightningBoltIcon } from '@radix-ui/react-icons'
 
+/**
+ * Renders the GPT-4 component.
+ *
+ * @return {JSX.Element} The rendered GPT-4 component.
+ */
 export const GPT4 = () => {
     return (
         <div

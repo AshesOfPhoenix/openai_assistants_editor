@@ -31,6 +31,15 @@ import { Textarea } from '@/components/ui/textarea'
 import { makeOpenAiApiRequest } from '@/lib/openai_api'
 import { CaretSortIcon, PlusIcon } from '@radix-ui/react-icons'
 
+/**
+ * Renders an Assistant Box component.
+ *
+ * @param {Object} {
+ *     assistant,
+ *     setActive,
+ * } - The props object containing the assistant and setActive function.
+ * @return {JSX.Element} The rendered Assistant Box component.
+ */
 const AssisstantBox = ({
     assistant,
     setActive,

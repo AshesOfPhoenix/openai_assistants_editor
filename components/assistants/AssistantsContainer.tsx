@@ -29,6 +29,11 @@ import {
 } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
 
+/**
+ * Renders the AssistantsContainer component.
+ *
+ * @returns {JSX.Element} The rendered AssistantsContainer component.
+ */
 const AssistantsContainer = () => {
     const {
         assistants,
